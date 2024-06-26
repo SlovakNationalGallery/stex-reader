@@ -1,8 +1,7 @@
 <template>
-  <div class="flex h-screen flex-col bg-[#FFF3E3]">
+  <div class="flex h-screen flex-col bg-[#FFF3E3] font-display">
     <div class="flex h-[80px] w-full items-center justify-between p-6 text-2xl">
       <div class="flex items-center gap-4">
-        <NuxtLink to="/"><ArrowDown class="h-8 w-8 rotate-90" /></NuxtLink>
         <span class="font-bold">{{
           trans(`library.${publication.id}.author`)
         }}</span>
@@ -47,7 +46,6 @@ import { ref, onMounted, Ref } from "vue";
 import { LIBRARY } from "../../consts";
 import LanguageSwitcher from "../components/LanguageSwitcher.vue";
 import Logo from "~/assets/img/logo.svg?component";
-import ArrowDown from "~/assets/img/arrow-down.svg?component";
 
 const route = useRoute();
 const index = route.params.id;
@@ -126,13 +124,15 @@ const handleTouchEnd = (event: TouchEvent, index: number) => {
 };
 
 onMounted(() => {
+  const config = useRuntimeConfig()
   let pageImages: Array<ImageData> = [];
   for (let i = 0; i < Number(publication.pages); i++) {
     pageImages.push({
       initialDistance: 0,
       initialTouchCenterX: 0,
       initialTouchCenterY: 0,
-      src: `/library/${publication.id}/${publication.id}-${i + 1}.jpg`,
+      //This is an issue in nuxt 3. Remove once fixed
+      src: `${config.app.baseURL}library/${publication.id}/${publication.id}-${i + 1}.jpg`,
       wrapperRef: ref(null),
     });
   }
