@@ -6,22 +6,23 @@
           trans(`library.${publication.id}.author`)
         }}</span>
         <span>{{ trans(`library.${publication.id}.title`) }}</span>
-        <span>({{ trans(`library.${publication.id}.year`) }})</span>
       </div>
       <LanguageSwitcher />
     </div>
-    <div class="flex grow items-center">
+    <div class="flex items-center grow">
       <div
-        class="no-scrollbar flex w-full snap-x snap-mandatory gap-x-11 overflow-x-auto px-11 pb-6 pt-16"
+        class="no-scrollbar flex w-full snap-x snap-mandatory gap-x-5 overflow-x-auto px-80 pb-6 pt-8"
       >
         <div
-          class="flex min-w-[700px] snap-center items-center overflow-hidden"
           v-for="(image, index) in images"
           :key="index"
+          class="flex flex-col min-w-[1000px] snap-center items-center overflow-hidden justify-around"
+          ref="booksRefs"
+          :book-index="index"
         >
-          <div>
+          <div class="h-[650px]">
             <img
-              class="w-full"
+              class="w-full h-full object-contain"
               :src="image.src"
               :ref="(el) => (image.wrapperRef = el)"
               @touchstart="(event) => handleTouchStart(event, index)"
@@ -29,20 +30,21 @@
               @touchend="(event) => handleTouchEnd(event, index)"
             />
           </div>
+          <div class="flex w-full items-center justify-around text-2xl pt-8">{{ trans(`library.${publication.id}.descriptions[${index}]`) }}</div>
         </div>
       </div>
     </div>
     <div
-      class="flex h-[72px] w-full items-center justify-center p-6 text-neutral-900"
+      class="flex h-[72px] w-full justify-start p-6 text-neutral-900"
     >
-      <Logo class="h-6 w-6" />
+      <Logo class="h-6 w-6 fill-black stroke-black" />
       <span class="ml-4 text-xl">{{ trans("sng") }}</span>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, Ref } from "vue";
+import { ref, onMounted, Ref, onBeforeMount } from "vue";
 import { LIBRARY } from "../../consts";
 import LanguageSwitcher from "../components/LanguageSwitcher.vue";
 import Logo from "~/assets/img/logo.svg?component";
@@ -50,6 +52,18 @@ import Logo from "~/assets/img/logo.svg?component";
 const route = useRoute();
 const index = route.params.id;
 const publication = LIBRARY[Number(index)];
+const activeBookIndex = ref<Number>();
+const booksRefs = ref([]);
+const intersectionObserver = new IntersectionObserver(
+  (entries, _) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        activeBookIndex.value = Number(entry.target.getAttribute("book-index"));
+      }
+    });
+  },
+  { threshold: 1 },
+);
 
 const { trans } = useLang();
 
@@ -123,8 +137,8 @@ const handleTouchEnd = (event: TouchEvent, index: number) => {
   wrapperRef.style.transformOrigin = `0px 0px`;
 };
 
-onMounted(() => {
-  const config = useRuntimeConfig()
+onBeforeMount(() => {
+  const config = useRuntimeConfig();
   let pageImages: Array<ImageData> = [];
   for (let i = 0; i < Number(publication.pages); i++) {
     pageImages.push({
@@ -132,10 +146,16 @@ onMounted(() => {
       initialTouchCenterX: 0,
       initialTouchCenterY: 0,
       //This is an issue in nuxt 3. Remove once fixed
-      src: `${config.app.baseURL}library/${publication.id}/${publication.id}-${i + 1}.jpg`,
+      src: `${config.app.baseURL}library/${publication.id}/${publication.id}-${
+        i + 1
+      }.jpg`,
       wrapperRef: ref(null),
     });
   }
   images.value = pageImages;
+});
+
+onMounted(() => {
+  booksRefs.value.map((bookRef) => intersectionObserver.observe(bookRef));
 });
 </script>
