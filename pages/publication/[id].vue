@@ -9,20 +9,20 @@
       </div>
       <LanguageSwitcher />
     </div>
-    <div class="flex items-center grow">
+    <div class="flex grow items-center">
       <div
         class="no-scrollbar flex w-full snap-x snap-mandatory gap-x-5 overflow-x-auto px-80 pb-6 pt-8"
       >
         <div
           v-for="(image, index) in images"
           :key="index"
-          class="flex flex-col min-w-[1000px] snap-center items-center overflow-hidden justify-around"
+          class="flex min-w-[1000px] snap-center flex-col items-center justify-around overflow-hidden"
           ref="booksRefs"
           :book-index="index"
         >
           <div class="h-[650px]">
             <img
-              class="w-full h-full object-contain"
+              class="h-full w-full object-contain"
               :src="image.src"
               :ref="(el) => (image.wrapperRef = el)"
               @touchstart="(event) => handleTouchStart(event, index)"
@@ -30,15 +30,44 @@
               @touchend="(event) => handleTouchEnd(event, index)"
             />
           </div>
-          <div class="flex w-full items-center justify-around text-2xl pt-8">{{ trans(`library.${publication.id}.descriptions[${index}]`) }}</div>
+          <div class="flex w-full items-center justify-around pt-8 text-2xl">
+            {{ trans(`library.${publication.id}.photosTitles[${index}]`) }}
+          </div>
         </div>
       </div>
     </div>
-    <div
-      class="flex h-[72px] w-full justify-start p-6 text-neutral-900"
-    >
-      <Logo class="h-6 w-6 fill-black stroke-black" />
-      <span class="ml-4 text-xl">{{ trans("sng") }}</span>
+    <div class="flex h-[72px] w-full justify-between p-6 text-neutral-900">
+      <div class="flex">
+        <Logo class="h-6 w-6 fill-black stroke-black" />
+        <span class="ml-4 text-xl">{{ trans("sng") }}</span>
+      </div>
+      <template
+        v-if="
+          trans(
+            `library.${publication.id}.photosDescriptions[${activeBookIndex}]`,
+          )
+        "
+      >
+        <button @click="isPopoverOpen = !isPopoverOpen">
+          <Close class="h-8 w-8" v-if="isPopoverOpen" />
+          <Info class="h-8 w-8" v-else />
+        </button>
+        <!-- <div class="h-screen w-screen fixed top-0 left-0" @click="isPopoverOpen = false"></div> -->
+        <dialog
+          :open="isPopoverOpen"
+          class="absolute bottom-16 ml-auto mr-6 w-1/2 rounded-xl border-2 border-black p-6"
+        >
+          <article class="flex flex-col">
+            <p class="whitespace-pre-wrap pt-2 text-lg leading-6">
+              {{
+                trans(
+                  `library.${publication.id}.photosDescriptions[${activeBookIndex}]`,
+                )
+              }}
+            </p>
+          </article>
+        </dialog>
+      </template>
     </div>
   </div>
 </template>
@@ -48,12 +77,16 @@ import { ref, onMounted, Ref, onBeforeMount } from "vue";
 import { LIBRARY } from "../../consts";
 import LanguageSwitcher from "../components/LanguageSwitcher.vue";
 import Logo from "~/assets/img/logo.svg?component";
+import Info from "../assets/img/info.svg?component";
+import Close from "~/assets/img/x-mark.svg?component";
 
 const route = useRoute();
 const index = route.params.id;
 const publication = LIBRARY[Number(index)];
 const activeBookIndex = ref<Number>();
 const booksRefs = ref([]);
+const isPopoverOpen = ref<boolean>(false);
+
 const intersectionObserver = new IntersectionObserver(
   (entries, _) => {
     entries.forEach((entry) => {
