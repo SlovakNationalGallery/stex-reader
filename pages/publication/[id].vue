@@ -6,6 +6,7 @@
           trans(`library.${publication.id}.author`)
         }}</span>
         <span>{{ trans(`library.${publication.id}.title`) }}</span>
+        <span>{{ trans(`library.${publication.id}.year`) }}</span>
       </div>
       <LanguageSwitcher />
     </div>
