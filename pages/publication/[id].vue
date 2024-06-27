@@ -6,6 +6,7 @@
           trans(`library.${publication.id}.author`)
         }}</span>
         <span>{{ trans(`library.${publication.id}.title`) }}</span>
+        <span>{{ trans(`library.${publication.id}.year`) }}</span>
       </div>
       <LanguageSwitcher />
     </div>
@@ -58,13 +59,16 @@
           class="absolute bottom-16 ml-auto mr-6 w-1/2 rounded-xl border-2 border-black p-6"
         >
           <article class="flex flex-col">
-            <p class="whitespace-pre-wrap pt-2 text-lg leading-6">
-              {{
-                trans(
-                  `library.${publication.id}.photosDescriptions[${activeBookIndex}]`,
+            <p
+              class="whitespace-pre-wrap pt-2 text-lg leading-6"
+              v-html="
+                formatDescription(
+                  trans(
+                    `library.${publication.id}.photosDescriptions[${activeBookIndex}]`,
+                  ),
                 )
-              }}
-            </p>
+              "
+            ></p>
           </article>
         </dialog>
       </template>
@@ -168,6 +172,10 @@ const handleTouchEnd = (event: TouchEvent, index: number) => {
   wrapperRef.style.transition = `all .25s`;
   wrapperRef.style.transform = `scale(1)`;
   wrapperRef.style.transformOrigin = `0px 0px`;
+};
+
+const formatDescription = (description: string) => {
+  return description.replace(/\n/g, "<br>");
 };
 
 onBeforeMount(() => {
