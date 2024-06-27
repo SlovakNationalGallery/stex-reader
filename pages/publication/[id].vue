@@ -22,7 +22,7 @@
           ref="booksRefs"
           :book-index="index"
         >
-          <div class="h-[650px]">
+          <div class="h-[650px] allow-pinch-zoom">
             <img
               class="h-full w-full object-contain"
               :src="image.src"
@@ -217,11 +217,9 @@ onBeforeUnmount(() => {
 });
 
 const resetOnIdle = () => {
-  console.log("resetOnIdle");
   activeBookIndex.value = 0;
   setLang("sk");
   booksContainer.value?.scrollTo({ top: 0, left: 0, behavior: "auto" });
-  document.body.style.zoom = "100%";
 };
 
 const resetIdleTimer = () => {
@@ -237,3 +235,5 @@ const handleUserActivity = () => {
   resetIdleTimer();
 };
 </script>
+
+
