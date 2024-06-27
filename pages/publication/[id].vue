@@ -13,6 +13,7 @@
     <div class="flex grow items-center">
       <div
         class="no-scrollbar flex w-full snap-x snap-mandatory gap-x-5 overflow-x-auto px-80 pb-6 pt-8"
+        ref="booksContainer"
       >
         <div
           v-for="(image, index) in images"
@@ -77,7 +78,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, Ref, onBeforeMount } from "vue";
+import { ref, onMounted, Ref, onBeforeMount, onBeforeUnmount } from "vue";
 import { LIBRARY } from "../../consts";
 import LanguageSwitcher from "../components/LanguageSwitcher.vue";
 import Logo from "~/assets/img/logo.svg?component";
@@ -89,6 +90,7 @@ const index = route.params.id;
 const publication = LIBRARY[Number(index)];
 const activeBookIndex = ref<Number>();
 const booksRefs = ref([]);
+const booksContainer = ref<HTMLElement | null>();
 const isPopoverOpen = ref<boolean>(false);
 
 const intersectionObserver = new IntersectionObserver(
@@ -102,7 +104,10 @@ const intersectionObserver = new IntersectionObserver(
   { threshold: 1 },
 );
 
-const { trans } = useLang();
+const { trans, setLang } = useLang();
+
+const IDLE_TIMEOUT = 60000; // 1 minute
+let idleTimer = null;
 
 interface ImageData {
   src: string;
@@ -197,6 +202,38 @@ onBeforeMount(() => {
 });
 
 onMounted(() => {
+  window.addEventListener("touchstart", handleUserActivity);
+  window.addEventListener("mousemove", handleUserActivity);
   booksRefs.value.map((bookRef) => intersectionObserver.observe(bookRef));
 });
+
+onBeforeUnmount(() => {
+  window.removeEventListener("touchstart", handleUserActivity);
+  window.removeEventListener("mousemove", handleUserActivity);
+  booksRefs.value.map((bookRef) => intersectionObserver.unobserve(bookRef));
+  if (idleTimer) {
+    clearTimeout(idleTimer);
+  }
+});
+
+const resetOnIdle = () => {
+  console.log("resetOnIdle");
+  activeBookIndex.value = 0;
+  setLang("sk");
+  booksContainer.value?.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  document.body.style.zoom = "100%";
+};
+
+const resetIdleTimer = () => {
+  if (idleTimer) {
+    clearTimeout(idleTimer);
+  }
+  idleTimer = setTimeout(() => {
+    resetOnIdle();
+  }, IDLE_TIMEOUT);
+};
+
+const handleUserActivity = () => {
+  resetIdleTimer();
+};
 </script>
