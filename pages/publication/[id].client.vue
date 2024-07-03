@@ -78,7 +78,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, Ref, onBeforeMount, onBeforeUnmount } from "vue";
+import { ref, onMounted, onBeforeMount, onBeforeUnmount } from "vue";
 import { LIBRARY } from "../../consts";
 import LanguageSwitcher from "../components/LanguageSwitcher.vue";
 import Logo from "~/assets/img/logo.svg?component";
@@ -114,10 +114,10 @@ interface ImageData {
   initialDistance: number;
   initialTouchCenterX: number;
   initialTouchCenterY: number;
-  wrapperRef: Ref<HTMLElement | null>;
+  wrapperRef: ref<HTMLElement | null>;
 }
 
-const images: Ref<Array<ImageData>> = ref([]);
+const images: ref<Array<ImageData>> = ref([]);
 
 const minScale = 1;
 const maxScale = 3;
