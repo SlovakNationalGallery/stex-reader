@@ -22,11 +22,11 @@
           ref="booksRefs"
           :book-index="index"
         >
-          <div class="h-[650px] allow-pinch-zoom">
+          <div class="allow-pinch-zoom h-[650px]">
             <img
               class="h-full w-full object-contain"
               :src="image.src"
-              :ref="(el) => (image.wrapperRef = el)"
+              :ref="(el) => (image.wrapperRef = el as HTMLElement)"
               @touchstart="(event) => handleTouchStart(event, index)"
               @touchmove="(event) => handleTouchMove(event, index)"
               @touchend="(event) => handleTouchEnd(event, index)"
@@ -78,9 +78,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, onBeforeMount, onBeforeUnmount } from "vue";
 import { LIBRARY } from "../../consts";
-import LanguageSwitcher from "../components/LanguageSwitcher.vue";
 import Logo from "~/assets/img/logo.svg?component";
 import Info from "../assets/img/info.svg?component";
 import Close from "~/assets/img/x-mark.svg?component";
@@ -107,22 +105,23 @@ const intersectionObserver = new IntersectionObserver(
 const { trans, setLang } = useLang();
 
 const IDLE_TIMEOUT = 60000; // 1 minute
-let idleTimer = null;
+let idleTimer: ReturnType<typeof setTimeout> | null = null;
 
 interface ImageData {
   src: string;
   initialDistance: number;
   initialTouchCenterX: number;
   initialTouchCenterY: number;
-  wrapperRef: ref<HTMLElement | null>;
+  wrapperRef: HTMLElement | null;
 }
 
-const images: ref<Array<ImageData>> = ref([]);
+const images: Ref<Array<ImageData> | null> = ref(null);
 
 const minScale = 1;
 const maxScale = 3;
 
 const handleTouchStart = (event: TouchEvent, index: number) => {
+  if (!images.value) return;
   const image = images.value[index];
   if (event.touches.length === 2) {
     event.preventDefault();
@@ -138,10 +137,12 @@ const handleTouchStart = (event: TouchEvent, index: number) => {
 };
 
 const handleTouchMove = (event: TouchEvent, index: number) => {
+  if (!images.value) return;
   const image = images.value[index];
   const frameRect = image.wrapperRef?.parentElement?.getBoundingClientRect();
   const wrapperRef = image.wrapperRef;
 
+  if (!wrapperRef) return;
   let scale = 1;
   if (event.touches.length === 2) {
     wrapperRef.style.transition = `all .0s`;
@@ -161,6 +162,7 @@ const handleTouchMove = (event: TouchEvent, index: number) => {
     scale = Math.min(maxScale, Math.max(minScale, scale + delta * 0.01));
 
     //inverse movement
+    if (!frameRect) return;
     const x = 2 * image.initialTouchCenterX - touchCenterX - frameRect.left;
     const y = 2 * image.initialTouchCenterY - touchCenterY - frameRect.top;
 
@@ -172,8 +174,10 @@ const handleTouchMove = (event: TouchEvent, index: number) => {
 };
 
 const handleTouchEnd = (event: TouchEvent, index: number) => {
+  if (!images.value) return;
   const image = images.value[index];
   const wrapperRef = image.wrapperRef;
+  if (!wrapperRef) return;
   wrapperRef.style.transition = `all .25s`;
   wrapperRef.style.transform = `scale(1)`;
   wrapperRef.style.transformOrigin = `0px 0px`;
@@ -195,7 +199,7 @@ onBeforeMount(() => {
       src: `${config.app.baseURL}library/${publication.id}/${publication.id}-${
         i + 1
       }.jpg`,
-      wrapperRef: ref(null),
+      wrapperRef: null,
     });
   }
   images.value = pageImages;
@@ -235,5 +239,3 @@ const handleUserActivity = () => {
   resetIdleTimer();
 };
 </script>
-
-
