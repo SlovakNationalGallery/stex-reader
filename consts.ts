@@ -7,6 +7,8 @@ type Publication = {
 
 export const TRANSLATIONS = {
   sk: {
+    preklad: "Preklad:",
+    gestureInstruction: "Roztiahnutím zväčšíš obrázok",
     sng: "Slovenská národná galéria",
     library: {
       "1": {
@@ -138,6 +140,8 @@ export const TRANSLATIONS = {
   },
   en: {
     sng: "Slovak National Gallery",
+    preklad: "Translation:",
+    gestureInstruction: "Pinch out to zoom in",
     library: {
       "1": {
         title: "Bardejovské Kúpele in Pictures",
