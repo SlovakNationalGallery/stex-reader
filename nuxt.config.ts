@@ -2,6 +2,7 @@
 import svgLoader from "vite-svg-loader";
 
 export default defineNuxtConfig({
+  ssr: false,
   modules: ["@nuxtjs/i18n"],
   vite: {
     plugins: [svgLoader({})],

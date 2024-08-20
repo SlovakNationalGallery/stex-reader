@@ -10,21 +10,19 @@
       </div>
       <LanguageSwitcher />
     </div>
-    <div class="flex grow items-center">
+    <div class="flex pt-10 items-center">
       <div
-        class="no-scrollbar flex w-full snap-x snap-mandatory gap-x-5 overflow-x-auto px-80 pb-6 pt-8"
+        class="no-scrollbar flex w-full snap-x snap-mandatory gap-x-5 overflow-x-auto px-80"
         ref="booksContainer"
       >
         <div
           v-for="(image, index) in images"
           :key="index"
-          class="flex min-w-[1000px] snap-center flex-col items-center justify-around overflow-hidden"
-          ref="booksRefs"
-          :book-index="index"
+          class="flex min-w-max snap-start items-center justify-around gap-8 overflow-hidden pl-6"
         >
-          <div class="allow-pinch-zoom h-[650px]">
+          <div class="h-[720px]" ref="booksRefs" :book-index="index">
             <img
-              class="h-full w-full object-contain"
+              class="h-full"
               :src="image.src"
               :ref="(el) => (image.wrapperRef = el as HTMLElement)"
               @touchstart="(event) => handleTouchStart(event, index)"
@@ -32,56 +30,44 @@
               @touchend="(event) => handleTouchEnd(event, index)"
             />
           </div>
-          <div class="flex w-full items-center justify-around pt-8 text-2xl">
-            {{ trans(`library.${publication.id}.photosTitles[${index}]`) }}
-          </div>
+          <article
+            class="flex w-[250px] flex-col items-start justify-around gap-6 pt-8 text-2xl"
+          >
+            <h2 class="font-bold">
+              {{ trans(`library.${publication.id}.photosTitles[${index}]`) }}
+            </h2>
+            <div
+              v-if="
+                trans(`library.${publication.id}.photosDescriptions[${index}]`)
+              "
+              class="flex flex-col gap-4 text-lg"
+            >
+              <span>{{ trans("preklad") }}</span>
+              <p
+                class="italic"
+                v-html="
+                  trans(
+                    `library.${publication.id}.photosDescriptions[${index}]`,
+                  )
+                "
+              />
+            </div>
+          </article>
         </div>
       </div>
     </div>
-    <div class="flex h-[72px] w-full justify-between p-6 text-neutral-900">
-      <div class="flex">
-        <Logo class="h-6 w-6 fill-black stroke-black" />
-        <span class="ml-4 text-xl">{{ trans("sng") }}</span>
+    <div class="inline-flex w-full items-center justify-center">
+      <div class="bg-black/5 rounded-xl gap-2 px-4 py-2 mt-10 flex items-center">
+        <PinchOut class="h-8 w-8 stroke-black" />
+        <span class="ml-4 text-xl leading-6 align-middle">{{ trans("gestureInstruction") }}</span>
       </div>
-      <template
-        v-if="
-          trans(
-            `library.${publication.id}.photosDescriptions[${activeBookIndex}]`,
-          )
-        "
-      >
-        <button @click="isPopoverOpen = !isPopoverOpen">
-          <Close class="h-8 w-8" v-if="isPopoverOpen" />
-          <Info class="h-8 w-8" v-else />
-        </button>
-        <!-- <div class="h-screen w-screen fixed top-0 left-0" @click="isPopoverOpen = false"></div> -->
-        <dialog
-          :open="isPopoverOpen"
-          class="absolute bottom-16 ml-auto mr-6 w-1/2 rounded-xl border-2 border-black p-6"
-        >
-          <article class="flex flex-col">
-            <p
-              class="whitespace-pre-wrap pt-2 text-lg leading-6"
-              v-html="
-                formatDescription(
-                  trans(
-                    `library.${publication.id}.photosDescriptions[${activeBookIndex}]`,
-                  ),
-                )
-              "
-            ></p>
-          </article>
-        </dialog>
-      </template>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { LIBRARY } from "../../consts";
-import Logo from "~/assets/img/logo.svg?component";
-import Info from "../assets/img/info.svg?component";
-import Close from "~/assets/img/x-mark.svg?component";
+import PinchOut from "~/assets/img/pinch-out.svg?component";
 
 const route = useRoute();
 const index = route.params.id;
