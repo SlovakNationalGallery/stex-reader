@@ -106,7 +106,6 @@ export const TRANSLATIONS = {
         author: "Károly Divald ml.",
         year: "1896",
         photosTitles: [
-          "Rimamuránsko Šalgótarjánska hutnícka akciová spoločnosť na Milenárnej výstave",
           "Plán pavilónu",
           "Vstup do pavilónu",
           "Železiarske podniky",
@@ -237,7 +236,6 @@ export const TRANSLATIONS = {
         author: "Károly Divald Jr",
         year: "1896",
         photosTitles: [
-          "Rimamurány-Salgotarjan metallurgical joint-stock company at the Millennium Exhibition",
           "Pavilion plan",
           "Pavilion entrance",
           "Metallurgical plants",
