@@ -4,6 +4,8 @@
 
 Allow SNG visitors to browse through documents on a tablet.
 
+![Screen Shot 2024-08-27 at 11 01 33](https://github.com/user-attachments/assets/b86ba197-6721-4908-b5b4-71a1f77c7182)
+
 ## Development
 
 Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
