@@ -1,4 +1,10 @@
-# Stex Touchscreen apps
+# Stex Reader
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+Allow SNG visitors to browse through documents on a tablet.
+
+## Development
 
 Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
 
